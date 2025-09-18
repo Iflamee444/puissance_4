@@ -1,0 +1,52 @@
+Liste :
+    - Tableau de jeu
+    - Les cases de jeu
+    - Les jetons
+    - Les équipes
+    - Boucle de jeu
+    - Les points (4 par victoire)
+
+
+HTML :
+    - Affichage du tableau et des changements (IA surement)
+
+
+Tableau :
+    - Créer
+    - Se nettoye
+
+Cases :
+    - Se remplir de jeton (1)
+    - Donner ses informations
+    - Vérifier ses voisins (renvoie ceux de son équipe)
+
+Jeton :
+    - ROUGE ou JAUNE
+
+Boucle de jeu :
+    - Créer le tableau
+    - Lancer le joueur 1
+    - Compter les tours
+    - Enregister le move de 1
+    - Lancer le joueur 2
+    - Enregister le move de 2
+    -- Après 4 tours de 1 & 2
+    --> lancer une vérification de victoire
+
+    vérification de victoire :
+        - Ordonne à chaque jeton de vérifier ses voisins
+        -- Si il possède un voisin de son équipe, il enregistre cette direction et continue [Enregistrer la position du voisin et vérifie cette coordonnée jusqu'à 4]
+        -- Si il est seul, il meurt et ne prend plus en compte les vérifications sauf si il n'est pas activer par un jeton voisin
+
+    Cas particulier :
+        -- Si le jeton est au milieu du 4 [si -1,0,1 est dans son équipe]
+
+    Solution :
+        - Créer un tableau pour enregistrer son équipe, et si il arrive à en aligner 4, victoire
+
+Restant à voir :
+- Le système de tour
+- L'arrêt du jeu
+- Le compteur de point
+- L'ajout de jeton
+- Un vérification de victoire efficace
