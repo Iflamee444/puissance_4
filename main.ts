@@ -109,9 +109,9 @@ export class Main {
     //Interaction joueur
 
     //Selectionneur de colonne
-    playerColonneSelected(selection : number) : void {
-        this.mechanique.dropJeton(selection);
-    }
+    playerColonneSelected(selection: number): void {
+    this.mechanique.dropJeton(selection, this.currentTeam);
+}
 
     //Victoire
     playerVictory(){
@@ -186,7 +186,7 @@ export class Board {
 }
 
 export class Jeton {
-    private equipe : Team | null = null;
+    equipe : Team;
 
     //Créer un jeton avec une équipe
     constructor(equipe : Team){
@@ -198,6 +198,7 @@ export class Jeton {
     getTeam() : Team | null{
         return this.equipe;
     }
+
 }
 
 export class Cases {
@@ -212,6 +213,12 @@ export class Cases {
         this.estVide = true; //Etat vide
         this.x = x; // Coordonnée X
         this.y = y; // Coordonnée Y
+    }
+
+    //Ajouter un jeton de l'équipe
+    ajouterJeton(team: Team): void {
+        this.holder = new Jeton(team);
+        this.estVide = false;
     }
     
     isEmpty() : boolean {
@@ -268,13 +275,22 @@ export class Mechanique {
         return -1; //Si aucun case n'est disponible
     }
 
-    dropJeton(colonne : number){
+    dropJeton(colonne : number, team : Team){
         // Choisir la colonne [X]
+        // Vérifie si elle est pleinne
         // Vérifie la case.isEmpty = true la plus basse
         // Si oui, change l'état de cette case et rajoute le jeton
         // Si non, passe à la case au dessus
         // Si la case [X,0] .isEmpty = false alors la colonne est pleine et change l'état de cette colonne en isFull = true
-        if()
+
+        //Si la colonne est pleinne annule le movement
+        if(this.isColumFull(colonne)){
+           return; //colone pleine
+        }
+        const ligne = this.availableCase(colonne);
+        if (ligne !== -1) {
+            this.myBoard.table[colonne][ligne].ajouterJeton(team);
+        }
     }
 
     isColumFull(colonne : number) : boolean{
@@ -288,13 +304,32 @@ export class Mechanique {
         return false;
     }
 
-    fullBoard(){
+    fullBoard() : boolean {
         // Après la vérification des allignements
         // Si toute les colonnes sont full alors arrête le jeu et déclare l'égalité et lance le reset du jeu
+
+        for(let i = 0; i < this.myBoard.getColonne(); i++){
+            if(!this.isColumFull(i)){ // Si une colone n'est pas full alors false
+                return false;
+            }
+        }
+        
+        return true; //Si tout est bien plein alors true
     }
 
-    teamVictory(){
+    //Vérifie si une alignement est faite ou que la table est full
+    teamVictory(team : Team){
         // Lance la vérification d'allignement
         // Retourne l'équipe qui a gagner
+        if(this.fullBoard() || this.alignementCheck(team)){
+                //Victoire team
+        }
+
+        //Rien
+    }
+
+    // S'execute après chaque tour
+    alignementCheck(team : Team) : boolean{
+        return false;
     }
 }
