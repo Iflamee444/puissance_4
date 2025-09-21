@@ -30,11 +30,11 @@ enum Team {
     YELLOW
 }
 
-export class Main {
+class Main {
     private currentTeam: Team;
     board: Board;
     mechanique: Mechanique;
-    private score : number[] = [0, 0]; // 0 : rouge , 1 : jaune
+    private score : [number, number] = [0, 0]; // 0 : rouge , 1 : jaune
 
     constructor() {
         this.board = new Board();
@@ -43,12 +43,35 @@ export class Main {
     }
 
     // La boucle du jeu
-    loop(): void {
-        // 1. Afficher le plateau
-        // 2. Gérer le tour du joueur
-        // 3. Vérifier victoire / égalité
-        // 4. Passer au joueur suivant
+    loop(autoPlay: boolean = true): void {
+        while (true) {
+            this.printBoard();
+
+            let col: number;
+            do {
+                col = Math.floor(Math.random() * this.board.getColonne());
+            } while (this.mechanique.isColumFull(col));
+
+            this.playerColonneSelected(col);
+
+            if (this.mechanique.alignementCheck(this.currentTeam)) {
+                this.printBoard();
+                console.log(`Victoire de l'équipe ${this.currentTeam === Team.RED ? "Rouge" : "Jaune"} !`);
+                this.giveScore(this.currentTeam);
+                return;
+            }
+
+            if (this.mechanique.fullBoard()) {
+                this.printBoard();
+                console.log("Match nul !");
+                return;
+            }
+
+            this.changeTeam();
+        }
+
     }
+
 
 
     //Team Gestion
@@ -115,9 +138,35 @@ export class Main {
 
     //Victoire
     playerVictory(){
-        if (this.score[0] = 10){ console.log("Rouge GAGNE !")}
-        if (this.score[1] = 10){ console.log("Jaune GAGNE !")}
+        if (this.score[0] === 10) { console.log("Rouge GAGNE !"); }
+        if (this.score[1] === 10) { console.log("Jaune GAGNE !"); }
     }
+
+    printBoard(): void {
+        let header = "    "; // espace pour l’alignement avec les numéros de ligne
+        for (let c = 0; c < this.board.getColonne(); c++) {
+            header += ` ${c}  `;
+        }
+        console.log(header);
+
+        for (let r = 0; r < this.board.getLigne(); r++) {
+            let row = `${r} `; // numéro de ligne
+            for (let c = 0; c < this.board.getColonne(); c++) {
+                const team = this.board.table[c][r]!.getJetonTeam();
+                if (team === Team.RED) {
+                    row += "[R] ";
+                } else if (team === Team.YELLOW) {
+                    row += "[J] ";
+                } else {
+                    row += "[ ] ";
+                }
+            }
+            console.log(row);
+        }
+        console.log("=".repeat(this.board.getColonne() * 4)); // ligne de séparation
+    }
+
+
 
 }
 
@@ -149,43 +198,39 @@ export class Main {
  * - constructor() : pour créer le tableau vide
  * - clear() : pour nettoyer le tableau de bas en haut
  */
-export class Board {
-    private ligne: number = 6; // les lignes
-    private colonne: number = 7; // les colonnes
-    table: Cases[][] = []; //Le tableau de case vide (ligne) (colone)
+class Board {
+    private ligne: number = 6; // lignes
+    private colonne: number = 7; // colonnes
+    table: Cases[][] = []; // tableau de Cases
 
-    // Générer la table vide
     constructor() {
-        for (let r = 0; r < this.ligne; r++) {
-            this.table[r] = [];
-            for (let c = 0; c < this.colonne; c++) {
-                this.table[c][r] = new Cases(c,r); //Création d'une case vide et lui donne ses coordonnées
+        this.table = [];
+
+        // Convention: table[colonne][ligne]
+        for (let c = 0; c < this.colonne; c++) {
+            this.table[c] = []; // initialise la colonne
+            for (let r = 0; r < this.ligne; r++) {
+                this.table[c][r] = new Cases(c, r); // remplit la case
             }
         }
     }
 
-    // Restart le tableau en nettoyant les case utiliser (commence depuis le base)
-    clear() : void {
-        for (let r = this.ligne - 1; r > 0; r--) {
-            for (let c = 0; c < this.colonne; c++) {
-                if(!this.table[r][c].isEmpty()){ // Si la case n'est pas vide
-
-                    this.table[r][c].clearSelf();
+    clear(): void {
+        for (let c = 0; c < this.colonne; c++) {
+            for (let r = 0; r < this.ligne; r++) {
+                if (!this.table[c][r].isEmpty()) {
+                    this.table[c][r].clearSelf();
                 }
             }
         }
     }
 
-    //Obtenir les informations sur le tableau
-
-    // Obtenir le nombre de colone
-    getColonne() : number {return this.colonne;}
-    
-    // Obtenir le nombre de ligne
-    getLigne() : number {return this.ligne;}
+    getColonne(): number { return this.colonne; }
+    getLigne(): number { return this.ligne; }
 }
 
-export class Jeton {
+
+class Jeton {
     equipe : Team;
 
     //Créer un jeton avec une équipe
@@ -195,13 +240,13 @@ export class Jeton {
     }
 
     //Récupère l'équipe du jeton (Rouge ou Jaune)
-    getTeam() : Team | null{
+    getTeam() : Team{
         return this.equipe;
     }
 
 }
 
-export class Cases {
+class Cases {
     public holder : Jeton | null;
     private estVide : boolean;
     private x : number; // Les colonnes
@@ -253,7 +298,7 @@ export class Cases {
 
 }
 
-export class Mechanique {
+class Mechanique {
 
     private myBoard : Board;
 
@@ -329,7 +374,71 @@ export class Mechanique {
     }
 
     // S'execute après chaque tour
-    alignementCheck(team : Team) : boolean{
-        return false;
+    alignementCheck(team: Team): boolean {
+    const cols = this.myBoard.getColonne();
+    const rows = this.myBoard.getLigne();
+
+    // Vérifier horizontalement
+    for (let r = 0; r < rows; r++) {
+        for (let c = 0; c <= cols - 4; c++) { // -4 car on regarde 4 jetons consécutifs
+            let win = true;
+            for (let i = 0; i < 4; i++) {
+                if (this.myBoard.table[c + i][r].getJetonTeam() !== team) {
+                    win = false;
+                    break;
+                }
+            }
+            if (win) return true;
+        }
     }
+
+    // Vérifier verticalement
+    for (let c = 0; c < cols; c++) {
+        for (let r = 0; r <= rows - 4; r++) {
+            let win = true;
+            for (let i = 0; i < 4; i++) {
+                if (this.myBoard.table[c][r + i].getJetonTeam() !== team) {
+                    win = false;
+                    break;
+                }
+            }
+            if (win) return true;
+        }
+    }
+
+    // Vérifier diagonale descendante (\)
+    for (let c = 0; c <= cols - 4; c++) {
+        for (let r = 0; r <= rows - 4; r++) {
+            let win = true;
+            for (let i = 0; i < 4; i++) {
+                if (this.myBoard.table[c + i][r + i].getJetonTeam() !== team) {
+                    win = false;
+                    break;
+                }
+            }
+            if (win) return true;
+        }
+    }
+
+    // Vérifier diagonale ascendante (/)
+    for (let c = 0; c <= cols - 4; c++) {
+        for (let r = 3; r < rows; r++) { // commence à 3 car on remonte
+            let win = true;
+            for (let i = 0; i < 4; i++) {
+                if (this.myBoard.table[c + i][r - i].getJetonTeam() !== team) {
+                    win = false;
+                    break;
+                }
+            }
+            if (win) return true;
+        }
+    }
+
+    return false; // Aucun alignement trouvé
 }
+
+}
+
+// Point d'entrée du programme
+const game = new Main();
+game.loop();
