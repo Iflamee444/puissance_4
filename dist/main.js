@@ -304,66 +304,41 @@ class Mechanique {
         //Rien
     }
     // S'execute après chaque tour
+    // Vérifie l'alignement récursivement pour 4 jetons
+    countRecursive(x, y, dx, dy, team) {
+        const cols = this.myBoard.getColonne();
+        const rows = this.myBoard.getLigne();
+        const nx = x + dx;
+        const ny = y + dy;
+        if (nx < 0 || nx >= cols || ny < 0 || ny >= rows)
+            return 0;
+        if (this.myBoard.table[nx][ny].getJetonTeam() !== team)
+            return 0;
+        return 1 + this.countRecursive(nx, ny, dx, dy, team);
+    }
     alignementCheck(team) {
         const cols = this.myBoard.getColonne();
         const rows = this.myBoard.getLigne();
-        // Vérifier horizontalement
-        for (let r = 0; r < rows; r++) {
-            for (let c = 0; c <= cols - 4; c++) { // -4 car on regarde 4 jetons consécutifs
-                let win = true;
-                for (let i = 0; i < 4; i++) {
-                    if (this.myBoard.table[c + i][r].getJetonTeam() !== team) {
-                        win = false;
-                        break;
-                    }
-                }
-                if (win)
-                    return true;
-            }
-        }
-        // Vérifier verticalement
         for (let c = 0; c < cols; c++) {
-            for (let r = 0; r <= rows - 4; r++) {
-                let win = true;
-                for (let i = 0; i < 4; i++) {
-                    if (this.myBoard.table[c][r + i].getJetonTeam() !== team) {
-                        win = false;
-                        break;
+            for (let r = 0; r < rows; r++) {
+                if (this.myBoard.table[c][r].getJetonTeam() === team) {
+                    const directions = [
+                        [1, 0], // horizontal
+                        [0, 1], // vertical
+                        [1, 1], // diagonale \
+                        [1, -1] // diagonale /
+                    ];
+                    for (const [dx, dy] of directions) {
+                        const count = 1
+                            + this.countRecursive(c, r, dx, dy, team)
+                            + this.countRecursive(c, r, -dx, -dy, team);
+                        if (count >= 4)
+                            return true;
                     }
                 }
-                if (win)
-                    return true;
             }
         }
-        // Vérifier diagonale descendante (\)
-        for (let c = 0; c <= cols - 4; c++) {
-            for (let r = 0; r <= rows - 4; r++) {
-                let win = true;
-                for (let i = 0; i < 4; i++) {
-                    if (this.myBoard.table[c + i][r + i].getJetonTeam() !== team) {
-                        win = false;
-                        break;
-                    }
-                }
-                if (win)
-                    return true;
-            }
-        }
-        // Vérifier diagonale ascendante (/)
-        for (let c = 0; c <= cols - 4; c++) {
-            for (let r = 3; r < rows; r++) { // commence à 3 car on remonte
-                let win = true;
-                for (let i = 0; i < 4; i++) {
-                    if (this.myBoard.table[c + i][r - i].getJetonTeam() !== team) {
-                        win = false;
-                        break;
-                    }
-                }
-                if (win)
-                    return true;
-            }
-        }
-        return false; // Aucun alignement trouvé
+        return false;
     }
 }
 // Point d'entrée du programme
