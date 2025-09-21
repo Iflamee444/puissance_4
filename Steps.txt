@@ -1,27 +1,28 @@
 Liste :
-    - Tableau de jeu
-    - Les cases de jeu
-    - Les jetons
-    - Les équipes
-    - Boucle de jeu
-    - Les points (4 par victoire)
+    - Tableau de jeu ✅
+    - Les cases de jeu ✅
+    - Les jetons ✅
+    - Les équipes ✅
+    - Boucle de jeu ✅
+    - Les points (4 par victoire) ✅
+    - L'input de l'utilisateur ❌
 
 
 HTML :
-    - Affichage du tableau et des changements (IA surement)
+    - Affichage du tableau et des changements (IA surement) ⁉️
 
 
 Tableau :
-    - Créer
-    - Se nettoye
+    - Créer ✅
+    - Se nettoye ✅
 
 Cases :
-    - Se remplir de jeton (1)
-    - Donner ses informations
-    - Vérifier ses voisins (renvoie ceux de son équipe)
+    - Se remplir de jeton (1) ✅
+    - Donner ses informations ✅
+    - Vérifier ses voisins (renvoie ceux de son équipe) ✅
 
 Jeton :
-    - ROUGE ou JAUNE
+    - ROUGE ou JAUNE ✅
 
 Boucle de jeu :
     - Créer le tableau
@@ -45,8 +46,44 @@ Boucle de jeu :
         - Créer un tableau pour enregistrer son équipe, et si il arrive à en aligner 4, victoire
 
 Restant à voir :
-- Le système de tour
-- L'arrêt du jeu
-- Le compteur de point
-- L'ajout de jeton
-- Un vérification de victoire efficace
+- Le système de tour ⁉️
+- L'arrêt du jeu ✅
+- Le compteur de point ⁉️
+- L'ajout de jeton ✅
+- Un vérification de victoire efficace ✅
+
+
+## Aides apportées par ChatGPT pour le projet Puissance 4
+
+Dans le cadre du développement du projet **Puissance 4**, ChatGPT m’a fourni un soutien technique et des conseils pour améliorer le code TypeScript. Les aides apportées incluent :
+
+### 1. Correction des erreurs TypeScript (`TS2532`)
+
+* Identification et résolution des erreurs liées aux objets potentiellement `undefined` dans le tableau `Board.table`.
+* Ajustement de l’initialisation des tableaux et utilisation de l’opérateur non-null (`!`) pour éviter les `TypeError`.
+
+### 2. Amélioration de l’affichage du plateau (`printBoard`)
+
+* Modification de la fonction pour afficher les indices des lignes et colonnes.
+* Affichage clair des cases avec `[ ]` pour vide, `[R]` pour jeton rouge, et `[J]` pour jeton jaune, conformément au format classique du Puissance 4.
+
+### 3. Refactor de la boucle principale (`loop()`)
+
+* Ajout de la logique pour choisir automatiquement une colonne vide si la colonne aléatoire est pleine.
+* Préparation pour gérer les tours joueur vs IA.
+* Intégration du contrôle de match nul et appel à la fonction `alignementCheck()` pour vérifier les alignements gagnants.
+
+### 4. Préparation de la fonction `alignementCheck()`
+
+* Mise en place de la structure permettant de vérifier les alignements horizontaux, verticaux et diagonaux.
+* Fonction prête à être implémentée pour détecter les victoires.
+
+### 5. Suppression des imports inutiles pour l’entrée utilisateur
+
+* Retrait de `prompt-sync` et de tout mécanisme d’entrée standard.
+* Laisser la logique de choix de colonne libre pour l’implémentation ultérieure du mode joueur.
+
+### 6. Refactor de `Mechanique.dropJeton()`
+
+* Gestion correcte de la gravité pour placer le jeton sur la case la plus basse disponible.
+* Vérification que la colonne n’est pas pleine avant le placement du jeton, pour éviter les erreurs et respecter les règles du jeu.
