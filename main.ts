@@ -386,7 +386,7 @@ class Mechanique {
     if (this.myBoard.table[nx]![ny]!.getJetonTeam() !== team) return 0;
 
     return 1 + this.countRecursive(nx, ny, dx, dy, team);
-}
+    }
 
     alignementCheck(team: Team): boolean {
         const cols = this.myBoard.getColonne();
@@ -412,9 +412,8 @@ class Mechanique {
             }
         }
 
-    return false;
-}
-
+        return false;
+    }
 
 }
 
