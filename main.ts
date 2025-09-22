@@ -152,7 +152,7 @@ class Main {
         for (let r = 0; r < this.board.getLigne(); r++) {
             let row = `${r} `; // numéro de ligne
             for (let c = 0; c < this.board.getColonne(); c++) {
-                const team = this.board.table[c][r]!.getJetonTeam();
+                const team = this.board.table[c]![r]!.getJetonTeam();
                 if (team === Team.RED) {
                     row += "[R] ";
                 } else if (team === Team.YELLOW) {
@@ -201,7 +201,7 @@ class Main {
 class Board {
     private ligne: number = 6; // lignes
     private colonne: number = 7; // colonnes
-    table: Cases[][] = []; // tableau de Cases
+    table: (Cases | undefined)[][] = []; // tableau de Cases
 
     constructor() {
         this.table = [];
@@ -210,7 +210,7 @@ class Board {
         for (let c = 0; c < this.colonne; c++) {
             this.table[c] = []; // initialise la colonne
             for (let r = 0; r < this.ligne; r++) {
-                this.table[c][r] = new Cases(c, r); // remplit la case
+                this.table[c]![r] = new Cases(c, r); // remplit la case
             }
         }
     }
@@ -218,8 +218,8 @@ class Board {
     clear(): void {
         for (let c = 0; c < this.colonne; c++) {
             for (let r = 0; r < this.ligne; r++) {
-                if (!this.table[c][r].isEmpty()) {
-                    this.table[c][r].clearSelf();
+                if (!this.table[c]![r]!.isEmpty()) {
+                    this.table[c]![r]!.clearSelf();
                 }
             }
         }
@@ -313,7 +313,7 @@ class Mechanique {
     //Vérifier la gravité (la case la plus basse libre) part depuis le bas
     availableCase(colone : number) : number{
         for(let i = this.myBoard.getLigne() - 1; i >= 0; i--) {
-            if(this.myBoard.table[colone][i].isEmpty()){
+            if(this.myBoard.table[colone]![i]!.isEmpty()){
                 return i;
             }
         }
@@ -334,7 +334,7 @@ class Mechanique {
         }
         const ligne = this.availableCase(colonne);
         if (ligne !== -1) {
-            this.myBoard.table[colonne][ligne].ajouterJeton(team);
+            this.myBoard.table[colonne]![ligne]!.ajouterJeton(team);
         }
     }
 
@@ -342,7 +342,7 @@ class Mechanique {
         // Vérifie si une colonne est pleine
         // Si la case 0 est pleine , alors il renvoie true
         // Si non, alors il renvoie false
-        if(!this.myBoard.table[colonne][0].isEmpty()) {
+        if(!this.myBoard.table[colonne]![0]!.isEmpty()) {
         
             return true;
         }
@@ -383,7 +383,7 @@ class Mechanique {
     const ny = y + dy;
 
     if (nx < 0 || nx >= cols || ny < 0 || ny >= rows) return 0;
-    if (this.myBoard.table[nx][ny].getJetonTeam() !== team) return 0;
+    if (this.myBoard.table[nx]![ny]!.getJetonTeam() !== team) return 0;
 
     return 1 + this.countRecursive(nx, ny, dx, dy, team);
 }
@@ -394,7 +394,7 @@ class Mechanique {
 
         for (let c = 0; c < cols; c++) {
             for (let r = 0; r < rows; r++) {
-                if (this.myBoard.table[c][r].getJetonTeam() === team) {
+                if (this.myBoard.table[c]![r]!.getJetonTeam() === team) {
                     const directions = [
                         [1, 0],  // horizontal
                         [0, 1],  // vertical
@@ -404,8 +404,8 @@ class Mechanique {
 
                     for (const [dx, dy] of directions) {
                         const count = 1 
-                            + this.countRecursive(c, r, dx, dy, team)
-                            + this.countRecursive(c, r, -dx, -dy, team);
+                            + this.countRecursive(c, r, dx!, dy!, team)
+                            + this.countRecursive(c, r, -dx!, -dy!, team);
                         if (count >= 4) return true;
                     }
                 }
