@@ -52,6 +52,8 @@ class Main {
                 col = Math.floor(Math.random() * this.board.getColonne());
             } while (this.mechanique.isColumFull(col));
 
+            console.log(col); // Affichage du move
+
             this.playerColonneSelected(col);
 
             if (this.mechanique.alignementCheck(this.currentTeam)) {
@@ -150,15 +152,15 @@ class Main {
         console.log(header);
 
         for (let r = 0; r < this.board.getLigne(); r++) {
-            let row = `${r} `; // numéro de ligne
+            let row = ` ${r} `; // numéro de ligne
             for (let c = 0; c < this.board.getColonne(); c++) {
                 const team = this.board.table[c]![r]!.getJetonTeam();
                 if (team === Team.RED) {
-                    row += "[R] ";
+                    row += "[🔴] ";
                 } else if (team === Team.YELLOW) {
-                    row += "[J] ";
+                    row += "[🟡] ";
                 } else {
-                    row += "[ ] ";
+                    row += "[  ] ";
                 }
             }
             console.log(row);
