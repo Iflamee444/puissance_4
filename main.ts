@@ -25,6 +25,10 @@
  * 5  [ ] [ ] [ ] [ ] [ ] [ ] [ ]
  */
 
+import promptSync from "prompt-sync";
+const prompt = promptSync();
+
+
 enum Team {
     RED,
     YELLOW
@@ -47,15 +51,19 @@ class Main {
         while (true) {
             this.printBoard();
 
-            let col: number;
+            
+            let col: number;/*
             do {
                 col = Math.floor(Math.random() * this.board.getColonne());
             } while (this.mechanique.isColumFull(col));
-
+            
             console.log(col); // Affichage du move
-
+            
             this.playerColonneSelected(col);
+            */
 
+            col = this.playerInput();
+            this.playerColonneSelected(col);
             if (this.mechanique.alignementCheck(this.currentTeam)) {
                 this.printBoard();
                 console.log(`Victoire de l'équipe ${this.currentTeam === Team.RED ? "Rouge" : "Jaune"} !`);
@@ -168,8 +176,34 @@ class Main {
         console.log("=".repeat(this.board.getColonne() * 4)); // ligne de séparation
     }
 
+    playerInput() : number{
+        let col: number;
+        do {
+            const input = prompt(
+                `Équipe ${
+                    this.currentTeam === Team.RED ? "Rouge" : "Jaune"
+                }, choisissez une colonne (1-${this.board.getColonne()}): `
+            );
+            col = parseInt(input) - 1; // Ajustement pour index 0
+        } while (!this.playerInputChecker(col)); // Inverse la condition pour continuer tant que l'entrée est invalide
+        return col;
+    }
 
-
+    playerInputChecker(col: number): boolean {
+        if (col < 0 || col >= this.board.getColonne()) {
+            console.log("Colonne invalide. Choisissez entre 0 et " + (this.board.getColonne()));
+            return false;
+        }
+        if (this.mechanique.isColumFull(col)) {
+            console.log("Colonne pleine. Choisissez une autre colonne.");
+            return false;
+        }
+        if (isNaN(col)) {
+            console.log("Entrée invalide. Veuillez entrer un numéro de colonne.");
+            return false;
+        }
+        return true;
+    }
 }
 
 /**
