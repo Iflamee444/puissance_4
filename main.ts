@@ -30,8 +30,8 @@ const prompt = promptSync();
 
 
 enum Team {
-    RED,
-    YELLOW
+    RED,  //Rouge
+    YELLOW  //Jaune
 }
 
 class Main {
@@ -51,8 +51,9 @@ class Main {
         while (true) {
             this.printBoard();
 
-            
-            let col: number;/*
+            let col: number;
+/*
+            // Laisser les robot jouer (Random)
             do {
                 col = Math.floor(Math.random() * this.board.getColonne());
             } while (this.mechanique.isColumFull(col));
@@ -61,28 +62,28 @@ class Main {
             
             this.playerColonneSelected(col);
             */
-
+            // Version joueur humain
             col = this.playerInput();
             this.playerColonneSelected(col);
+
+            // Vérification victoire
             if (this.mechanique.alignementCheck(this.currentTeam)) {
                 this.printBoard();
                 console.log(`Victoire de l'équipe ${this.currentTeam === Team.RED ? "Rouge" : "Jaune"} !`);
                 this.giveScore(this.currentTeam);
-                return;
+                return;  // Continue
             }
 
             if (this.mechanique.fullBoard()) {
                 this.printBoard();
                 console.log("Match nul !");
-                return;
+                return; // Lancer le reset
             }
 
             this.changeTeam();
         }
 
     }
-
-
 
     //Team Gestion
 
@@ -237,7 +238,7 @@ class Main {
 class Board {
     private ligne: number = 6; // lignes
     private colonne: number = 7; // colonnes
-    table: (Cases | undefined)[][] = []; // tableau de Cases
+    table: (Cases)[][] = []; // tableau de Cases
 
     constructor() {
         this.table = [];
@@ -410,7 +411,7 @@ class Mechanique {
     }
 
     // S'execute après chaque tour
-     // Vérifie l'alignement récursivement pour 4 jetons
+    // Vérifie l'alignement récursivement pour 4 jetons
     private countRecursive(x: number, y: number, dx: number, dy: number, team: Team): number {
     const cols = this.myBoard.getColonne();
     const rows = this.myBoard.getLigne();
